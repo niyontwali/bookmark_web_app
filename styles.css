@@ -1,0 +1,56 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+.container {
+  max-width: 400px;
+  margin: 20px auto;
+  padding: 0 20px;
+}
+h1 {
+  text-align: center;
+}
+form {
+  margin-bottom: 20px;
+}
+form input[type="text"],
+form input[type="url"],
+form button {
+  margin: 5px;
+  padding: 8px;
+  width: calc(100% - 18px);
+  box-sizing: border-box;
+  border-radius: 5px;
+  border: 2px solid gray;
+}
+
+form input[type="text"]:focus,
+form input[type="url"]:focus {
+  outline: none;
+  border: 2px solid blueviolet;
+}
+
+button:hover {
+  border: 2px solid blueviolet;
+  background-color: blueviolet;
+  color: white;
+  cursor: pointer;
+}
+
+.bookmarks {
+  list-style: none;
+  padding: 0;
+}
+.bookmark {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  padding: 10px;
+}
+.bookmark h3 {
+  margin-top: 0;
+}
+.bookmark p {
+  margin: 10px 0;
+}
