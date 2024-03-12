@@ -1,84 +1,134 @@
+// Initialize bookmarksData as an empty array
 let bookmarksData = [];
 
-// set an event listen for whenever a page loads and this will help us always graph the update LS data
+// Fetch bookmarks from the backend when the page loads
 document.addEventListener('DOMContentLoaded', () => {
-  if (localStorage.getItem('bookmarks')) {
-    bookmarksData = JSON.parse(localStorage.getItem('bookmarks'));
-
-  }
-  displayBookmarks();
+  fetchBookmarks();
 });
 
-document.getElementById('bookmarkForm').addEventListener('submit', (event) => {
+// Event listener for submitting the bookmark form
+document.getElementById('bookmarkForm').addEventListener('submit', async (event) => {
   event.preventDefault();
-  // grab values from the inputs
-  const siteName = document.getElementById('siteName').value;
-  const siteUrl = document.getElementById('siteUrl').value;
+  const siteName = document.getElementById('siteName').value.trim();
+  const siteUrl = document.getElementById('siteUrl').value.trim();
 
-  // bookmark data to be submited
+  // Basic input validation
+  if (!siteName || !siteUrl) {
+    alert('Please provide both a name and a URL for the bookmark.');
+    return;
+  }
+
   const bookmark = {
-    id: Date.now(),
     name: siteName,
     url: siteUrl
   };
 
-  // Call the function of addBookmark 
-  addBookmark(bookmark);
+  await addBookmark(bookmark);
 });
 
-const addBookmark = (bookmark) => {
-  // functionalities of adding a bookmark
-  bookmarksData.push(bookmark);
-  // store the updated bookmarksData in the LS
-  localStorage.setItem('bookmarks', JSON.stringify(bookmarksData));
-  displayBookmarks();
-};
 
-// display bookmarks function
+// Function to display bookmarks
 const displayBookmarks = () => {
-  // define a bookmarksList for our ul
   let bookmarksList = document.querySelector('.bookmarks');
-  // show message when we do not have bookmarks
-  if (bookmarksData.length === 0) {
+  bookmarksList.innerHTML = "";
+
+  if (!Array.isArray(bookmarksData) || bookmarksData.length === 0) {
     bookmarksList.innerHTML = 'You do not have bookmarks yet';
     return;
-  } else {
-    bookmarksList.innerHTML = "";
   }
 
-
-  bookmarksData.map((bookmark) => {
-    let bookmarkElement = document.createElement('li');
-    bookmarkElement.classList.add('bookmark');
-    bookmarkElement.innerHTML = `
-                    <h3>${bookmark.name}</h3>
-                    <p>
-                      <a href="${bookmark.url}" target="_blank">Visit the bookmark</a>
-                    </p>
-                    <button onclick="deleteBookmark(${bookmark.id})">Delete</button>
-                    <button onclick="navigateToEditForm(${bookmark.id})">Edit</button>
-                    `;
-
-    // append the new element so that it can display
+  bookmarksData.forEach((bookmark) => {
+    let bookmarkElement = createBookmarkElement(bookmark);
     bookmarksList.appendChild(bookmarkElement);
   });
-
 };
 
-// delete bookmark function
-const deleteBookmark = (id) => {
-  // functionalities of deleting a bookmark
-  bookmarksData = bookmarksData.filter((bookmark) => {
-    return bookmark.id !== id;
-  });
+// Function to create a bookmark element
+const createBookmarkElement = (bookmark) => {
+  let bookmarkElement = document.createElement('li');
+  bookmarkElement.classList.add('bookmark');
+  bookmarkElement.innerHTML = `
+    <h3>${bookmark.name}</h3>
+    <p>
+      <a href="${bookmark.url}" target="_blank">Visit the bookmark</a>
+    </p>
+    <button onclick="deleteBookmark('${bookmark._id}')">Delete</button>
+    <button onclick="navigateToEditForm('${bookmark._id}')">Edit</button>
+  `;
+  return bookmarkElement;
+};
 
-  localStorage.setItem('bookmarks', JSON.stringify(bookmarksData));
-  displayBookmarks();
+// Function to fetch bookmarks from the backend
+const fetchBookmarks = async () => {
+  try {
+    // Retrieve the token from localStorage
+    const token = localStorage.getItem('token');
+
+    // Check if the token exists
+    if (!token) {
+      throw new Error('Token not found in localStorage');
+    }
+
+    // Fetch bookmarks with the token included in the request headers
+    const response = await fetch('http://localhost:8081/bookmarks', {
+      headers: {
+        'Authorization': `${token}`
+      }
+    });
+
+    // Check if the response is successful
+    if (!response.ok) {
+      throw new Error('Failed to fetch bookmarks');
+    }
+
+    // Extract bookmarks data from the response
+    const dataObj = await response.json();
+    bookmarksData = dataObj.data;
+    displayBookmarks();
+  } catch (error) {
+    console.error('Error while fetching bookmarks:', error);
+  }
 };
 
 
-// navigate to edit bookmark form 
+// Function to add a bookmark
+const addBookmark = async (bookmark) => {
+  try {
+    const response = await fetch('http://localhost:8081/bookmarks', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(bookmark)
+    });
+    if (!response.ok) {
+      throw new Error('Failed to add bookmark');
+    }
+    fetchBookmarks(); // Refresh bookmarks after adding
+  } catch (error) {
+    console.error('Error fetching bookmarks:', error);
+  }
+};
+
+
+
+// Function to delete a bookmark
+const deleteBookmark = async (id) => {
+  try {
+    const response = await fetch(`http://localhost:8081/bookmarks/${id}`, {
+      method: 'DELETE'
+    });
+    if (!response.ok) {
+      throw new Error('Failed to delete bookmark');
+    }
+    fetchBookmarks(); // Refresh bookmarks after deleting
+  } catch (error) {
+    console.error('Error deleting bookmark:', error.message);
+  }
+};
+
+
+// Function to navigate to the edit bookmark form
 const navigateToEditForm = (id) => {
-  window.location.href = `editBookmark.html?id=${id}` 
-  //  window.location.href ='editBookmark.html?id=' + id
-}
+  window.location.href = `editBookmark.html?id=${id}`;
+};

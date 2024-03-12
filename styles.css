@@ -1,19 +1,25 @@
+/* Bookmarks styles */
+
 body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
 }
+
 .container {
   max-width: 400px;
   margin: 20px auto;
   padding: 0 20px;
 }
+
 h1 {
   text-align: center;
 }
+
 form {
   margin-bottom: 20px;
 }
+
 form input[type="text"],
 form input[type="url"],
 form button {
@@ -42,15 +48,75 @@ button:hover {
   list-style: none;
   padding: 0;
 }
+
 .bookmark {
   border: 1px solid #ccc;
   border-radius: 5px;
   margin-bottom: 10px;
   padding: 10px;
 }
+
 .bookmark h3 {
   margin-top: 0;
 }
+
 .bookmark p {
   margin: 10px 0;
+}
+
+/* New styles for login form */
+
+.login-container {
+  max-width: 400px;
+  margin: 20px auto;
+  padding: 20px;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+}
+
+.login-container h2 {
+  text-align: center;
+}
+
+.login-container form {
+  margin-top: 20px;
+}
+
+.login-container form .form-group {
+  margin-bottom: 15px;
+}
+
+.login-container form label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.login-container form input[type="email"],
+.login-container form input[type="password"],
+.login-container form button[type="submit"] {
+  margin: 5px;
+  padding: 8px;
+  width: calc(100% - 18px);
+  box-sizing: border-box;
+  border-radius: 5px;
+  border: 2px solid gray;
+}
+
+.login-container form input[type="email"],
+.login-container form input[type="password"] {
+  padding: 10px;
+  outline: none;
+}
+
+.login-container form button[type="submit"] {
+  background-color: blueviolet;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.login-container form button[type="submit"]:hover {
+  background-color: darkviolet;
 }
